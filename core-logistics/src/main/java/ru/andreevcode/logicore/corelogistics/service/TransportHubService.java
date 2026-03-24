@@ -27,7 +27,9 @@ public class TransportHubService {
                     null,
                     dto.name(),
                     dto.capacity(),
-                    dto.code());
+                    dto.code(),
+                    null
+            );
 
     private final TransportHubRepository repository;
 

@@ -24,11 +24,11 @@ public class TransportHubRepository implements GeneralRepo<TransportHubEntity, L
     );
 
     private static final String FIND_ALL = """
-                SELECT id, name, capacity, code FROM logistics.transport_hub;
+                SELECT id, name, capacity, code, version FROM logistics.transport_hub;
             """;
 
     private static final String FIND_BY_ID = """
-                SELECT id, name, capacity, code FROM logistics.transport_hub where id = :id;
+                SELECT id, name, capacity, code, version FROM logistics.transport_hub where id = :id;
             """;
 
     private static final String INSERT = """
