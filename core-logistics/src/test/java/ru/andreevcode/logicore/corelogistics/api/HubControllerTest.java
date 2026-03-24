@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
+import ru.andreevcode.logicore.corelogistics.data.RequestChangeCapacityDto;
 import ru.andreevcode.logicore.corelogistics.data.RequestHubDto;
 import ru.andreevcode.logicore.corelogistics.data.ResponseHubDto;
 import ru.andreevcode.logicore.corelogistics.service.TransportHubService;
@@ -136,5 +137,43 @@ class HubControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/hubs/2"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$").value("No transport hub found for id=2"));
+    }
+
+    @Test
+    void shouldChangeCapacityWith200() throws Exception {
+        var capacityChangeDto = new RequestChangeCapacityDto(-30);
+        jdbcTemplate.update("""
+                    INSERT INTO logistics.transport_hub(name, capacity, code) VALUES ('test-hub-1', 30, 'hub-1');
+                """);
+
+        var expectedHub = new ResponseHubDto(1L, "test-hub-1", 0, "hub-1");
+        String jsonResponse = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/hubs/1/capacity")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(capacityChangeDto))
+                )
+                .andExpect(status().isAccepted())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        var actualHub = objectMapper
+                .readValue(jsonResponse, new TypeReference<ResponseHubDto>() {
+                });
+        assertThat(actualHub).isEqualTo(expectedHub);
+    }
+
+    @Test
+    void shouldChangeForTooLowCapacityWith409() throws Exception {
+        var capacityChangeDto = new RequestChangeCapacityDto(-30);
+        jdbcTemplate.update("""
+                    INSERT INTO logistics.transport_hub(name, capacity, code) VALUES ('test-hub-1', 10, 'hub-1');
+                """);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/hubs/1/capacity")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(capacityChangeDto))
+                )
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$").value("Not enough capacity(10) for request(-30) at hub id=1, version=0"));
     }
 }

@@ -42,6 +42,10 @@ public class TransportHubRepository implements GeneralRepo<TransportHubEntity, L
                 INSERT INTO logistics.transport_hub (name, capacity, code) VALUES (:name, :capacity, :code);
             """;
 
+    private static final String UPDATE_CAPACITY_OPTIMISTIC = """
+                UPDATE logistics.transport_hub SET capacity = :capacity, version = :new_version WHERE id =:id AND version = :version;
+            """;
+
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 
@@ -75,5 +79,14 @@ public class TransportHubRepository implements GeneralRepo<TransportHubEntity, L
         }
         transportHub.setId(key.longValue());
         return transportHub;
+    }
+
+    public int updateCapacity(long id, int capacity, long version, long newVersion){
+        var params = new MapSqlParameterSource()
+                .addValue(ID, id)
+                .addValue(CAPACITY, capacity)
+                .addValue(VERSION, version)
+                .addValue("new_version", newVersion);
+        return namedParameterJdbcTemplate.update(UPDATE_CAPACITY_OPTIMISTIC, params);
     }
 }
