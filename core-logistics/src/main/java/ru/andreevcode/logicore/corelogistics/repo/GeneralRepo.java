@@ -8,5 +8,5 @@ public interface GeneralRepo<T, R> {
 
     Optional<T> findById(R id);
 
-    T save(T t);
+    T insert(T t);
 }

@@ -54,7 +54,7 @@ public class TransportHubRepository implements GeneralRepo<TransportHubEntity, L
 
 
     @Override
-    public TransportHubEntity save(TransportHubEntity transportHub) {
+    public TransportHubEntity insert(TransportHubEntity transportHub) {
         var keyHolder = new GeneratedKeyHolder();
         var params = new MapSqlParameterSource()
                 .addValue("name", transportHub.getName())

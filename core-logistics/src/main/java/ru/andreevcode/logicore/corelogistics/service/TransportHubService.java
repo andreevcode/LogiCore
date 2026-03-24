@@ -40,8 +40,8 @@ public class TransportHubService {
     }
 
     @Transactional
-    public ResponseHubDto save(RequestHubDto requestHubDto) {
-        TransportHubEntity entity = repository.save(TO_ENTITY_MAPPER.apply(requestHubDto));
+    public ResponseHubDto insert(RequestHubDto requestHubDto) {
+        TransportHubEntity entity = repository.insert(TO_ENTITY_MAPPER.apply(requestHubDto));
         return TO_DTO_MAPPER.apply(entity);
     }
 

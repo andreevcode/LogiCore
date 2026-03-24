@@ -27,6 +27,6 @@ public class HubController {
 
     @PostMapping
     public ResponseEntity<ResponseHubDto> postTransportHub(@Valid @RequestBody RequestHubDto newHub) {
-        return new ResponseEntity<>(transportHubService.save(newHub), HttpStatus.CREATED);
+        return new ResponseEntity<>(transportHubService.insert(newHub), HttpStatus.CREATED);
     }
 }

@@ -33,13 +33,13 @@ class TransportHubServiceTest {
     }
 
     @Test
-    void testSaveConversions() {
+    void testInsertConversions() {
         var requestHubDto = new RequestHubDto("test-hub-1", 2, "hub-1");
-        Mockito.when(repository.save(any()))
-                .thenReturn(new TransportHubEntity(101L, "test-hub-1",2, "hub-1"));
+        Mockito.when(repository.insert(any()))
+                .thenReturn(new TransportHubEntity(101L, "test-hub-1", 2, "hub-1", 0L));
 
-        Assertions.assertEquals(new ResponseHubDto(101L, "test-hub-1",2, "hub-1"),
-                transportHubService.save(requestHubDto)
+        Assertions.assertEquals(new ResponseHubDto(101L, "test-hub-1", 2, "hub-1"),
+                transportHubService.insert(requestHubDto)
         );
     }
 
