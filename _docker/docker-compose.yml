@@ -25,8 +25,6 @@ services:
   core-logistics:
     build: ../core-logistics
     container_name: core-logistics
-#    env_file:
-#      - ./core-logistics/.env
     env_file:
       - ./.env.pg-secrets
     environment:
