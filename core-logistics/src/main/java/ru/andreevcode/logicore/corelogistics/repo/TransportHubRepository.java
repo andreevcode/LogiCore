@@ -16,11 +16,18 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class TransportHubRepository implements GeneralRepo<TransportHubEntity, Long> {
+    private static final String ID = "id";
+    private static final String NAME = "name";
+    private static final String CAPACITY = "capacity";
+    private static final String CODE = "code";
+    private static final String VERSION = "version";
+
     private static final RowMapper<TransportHubEntity> ROW_MAPPER = ((rs, rowNum) -> new TransportHubEntity(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getInt("capacity"),
-            rs.getString("code"))
+            rs.getLong(ID),
+            rs.getString(NAME),
+            rs.getInt(CAPACITY),
+            rs.getString(CODE),
+            rs.getLong(VERSION))
     );
 
     private static final String FIND_ALL = """
@@ -57,9 +64,9 @@ public class TransportHubRepository implements GeneralRepo<TransportHubEntity, L
     public TransportHubEntity insert(TransportHubEntity transportHub) {
         var keyHolder = new GeneratedKeyHolder();
         var params = new MapSqlParameterSource()
-                .addValue("name", transportHub.getName())
-                .addValue("capacity", transportHub.getCapacity())
-                .addValue("code", transportHub.getCode());
+                .addValue(NAME, transportHub.getName())
+                .addValue(CAPACITY, transportHub.getCapacity())
+                .addValue(CODE, transportHub.getCode());
         namedParameterJdbcTemplate.update(INSERT, params, keyHolder, new String[]{"id"});
 
         Number key = keyHolder.getKey();

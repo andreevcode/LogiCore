@@ -47,13 +47,13 @@ class TransportHubServiceTest {
     void testFindByIdConversions() {
         final long id = 101L;
         Mockito.when(repository.findById(id))
-                .thenReturn(Optional.of(new TransportHubEntity(101L, "test-hub-1",2, "hub-1")));
+                .thenReturn(Optional.of(new TransportHubEntity(101L, "test-hub-1", 2, "hub-1", 0L)));
 
-        assertThat(transportHubService.findById(id)).isEqualTo(new ResponseHubDto(101L, "test-hub-1",2, "hub-1"));
+        assertThat(transportHubService.findById(id)).isEqualTo(new ResponseHubDto(101L, "test-hub-1", 2, "hub-1"));
     }
 
     @Test
-    void shouldThrowHubNotFoundException() {
+    void shouldFindByIdThrowHubNotFoundException() {
         final long id = 101L;
         Mockito.when(repository.findById(id)).thenReturn(Optional.empty());
         assertThatThrownBy(() -> transportHubService.findById(id))
