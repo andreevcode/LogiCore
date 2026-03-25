@@ -1,7 +1,7 @@
 package ru.andreevcode.logicore.corelogistics.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.resilience.annotation.EnableResilientMethods;
 import org.springframework.resilience.annotation.Retryable;
@@ -19,7 +19,7 @@ import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 @EnableResilientMethods
 public class TransportHubService {
     private static final String NO_HUB_EXCEPTION = "No transport hub found for id=";

@@ -163,7 +163,7 @@ class HubControllerTest {
     }
 
     @Test
-    void shouldChangeForTooLowCapacityWith409() throws Exception {
+    void shouldChangeForTooLowCapacityWith422() throws Exception {
         var capacityChangeDto = new RequestChangeCapacityDto(-30);
         jdbcTemplate.update("""
                     INSERT INTO logistics.transport_hub(name, capacity, code) VALUES ('test-hub-1', 10, 'hub-1');
@@ -173,7 +173,7 @@ class HubControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(capacityChangeDto))
                 )
-                .andExpect(status().isConflict())
+                .andExpect(status().isUnprocessableContent())
                 .andExpect(jsonPath("$").value("Not enough capacity(10) for request(-30) at hub id=1, version=0"));
     }
 }

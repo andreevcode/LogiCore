@@ -25,8 +25,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
-    @ExceptionHandler({NotEnoughCapacityException.class, OptimisticLockingFailureException.class})
-    public ResponseEntity<String> handleConflictExceptionsFor409(RuntimeException e) {
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ResponseEntity<String> handleOptimisticLockingFailureExceptionFor409(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(NotEnoughCapacityException.class)
+    public ResponseEntity<String> handleNotEnoughCapacityExceptionFor422(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(e.getMessage());
     }
 }
