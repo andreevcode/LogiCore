@@ -16,23 +16,34 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class TransportHubRepository implements GeneralRepo<TransportHubEntity, Long> {
+    private static final String ID = "id";
+    private static final String NAME = "name";
+    private static final String CAPACITY = "capacity";
+    private static final String CODE = "code";
+    private static final String VERSION = "version";
+
     private static final RowMapper<TransportHubEntity> ROW_MAPPER = ((rs, rowNum) -> new TransportHubEntity(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getInt("capacity"),
-            rs.getString("code"))
+            rs.getLong(ID),
+            rs.getString(NAME),
+            rs.getInt(CAPACITY),
+            rs.getString(CODE),
+            rs.getLong(VERSION))
     );
 
     private static final String FIND_ALL = """
-                SELECT id, name, capacity, code FROM logistics.transport_hub;
+                SELECT id, name, capacity, code, version FROM logistics.transport_hub;
             """;
 
     private static final String FIND_BY_ID = """
-                SELECT id, name, capacity, code FROM logistics.transport_hub where id = :id;
+                SELECT id, name, capacity, code, version FROM logistics.transport_hub where id = :id;
             """;
 
     private static final String INSERT = """
                 INSERT INTO logistics.transport_hub (name, capacity, code) VALUES (:name, :capacity, :code);
+            """;
+
+    private static final String UPDATE_CAPACITY_OPTIMISTIC = """
+                UPDATE logistics.transport_hub SET capacity = :capacity, version = :new_version WHERE id =:id AND version = :version;
             """;
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -54,12 +65,12 @@ public class TransportHubRepository implements GeneralRepo<TransportHubEntity, L
 
 
     @Override
-    public TransportHubEntity save(TransportHubEntity transportHub) {
+    public TransportHubEntity insert(TransportHubEntity transportHub) {
         var keyHolder = new GeneratedKeyHolder();
         var params = new MapSqlParameterSource()
-                .addValue("name", transportHub.getName())
-                .addValue("capacity", transportHub.getCapacity())
-                .addValue("code", transportHub.getCode());
+                .addValue(NAME, transportHub.getName())
+                .addValue(CAPACITY, transportHub.getCapacity())
+                .addValue(CODE, transportHub.getCode());
         namedParameterJdbcTemplate.update(INSERT, params, keyHolder, new String[]{"id"});
 
         Number key = keyHolder.getKey();
@@ -68,5 +79,14 @@ public class TransportHubRepository implements GeneralRepo<TransportHubEntity, L
         }
         transportHub.setId(key.longValue());
         return transportHub;
+    }
+
+    public int updateCapacity(long id, int capacity, long version, long newVersion){
+        var params = new MapSqlParameterSource()
+                .addValue(ID, id)
+                .addValue(CAPACITY, capacity)
+                .addValue(VERSION, version)
+                .addValue("new_version", newVersion);
+        return namedParameterJdbcTemplate.update(UPDATE_CAPACITY_OPTIMISTIC, params);
     }
 }

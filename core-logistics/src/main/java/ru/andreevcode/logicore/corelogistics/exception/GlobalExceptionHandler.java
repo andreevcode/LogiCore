@@ -1,5 +1,6 @@
 package ru.andreevcode.logicore.corelogistics.exception;
 
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -22,5 +23,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HubNotFoundException.class)
     public ResponseEntity<String> handleNoHubFoundException(HubNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ResponseEntity<String> handleOptimisticLockingFailureExceptionFor409(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(NotEnoughCapacityException.class)
+    public ResponseEntity<String> handleNotEnoughCapacityExceptionFor422(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(e.getMessage());
     }
 }

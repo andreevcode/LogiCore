@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.andreevcode.logicore.corelogistics.data.RequestChangeCapacityDto;
 import ru.andreevcode.logicore.corelogistics.data.RequestHubDto;
 import ru.andreevcode.logicore.corelogistics.data.ResponseHubDto;
 import ru.andreevcode.logicore.corelogistics.service.TransportHubService;
@@ -27,6 +28,13 @@ public class HubController {
 
     @PostMapping
     public ResponseEntity<ResponseHubDto> postTransportHub(@Valid @RequestBody RequestHubDto newHub) {
-        return new ResponseEntity<>(transportHubService.save(newHub), HttpStatus.CREATED);
+        return new ResponseEntity<>(transportHubService.insert(newHub), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}/capacity")
+    public ResponseEntity<ResponseHubDto> updateCapacity(
+            @PathVariable long id,
+            @Valid @RequestBody RequestChangeCapacityDto dto) {
+        return new ResponseEntity<>(transportHubService.updateCapacity(id, dto.amount()), HttpStatus.ACCEPTED);
     }
 }
