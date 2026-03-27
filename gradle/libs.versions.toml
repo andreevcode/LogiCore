@@ -1,0 +1,31 @@
+[versions]
+springBoot = "4.0.4"
+dependencyManagement = "1.1.7"
+
+[plugins]
+# Описываем плагины, чтобы не хардкодить их версии в модулях
+spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
+spring-dependency = { id = "io.spring.dependency-management", version.ref = "dependencyManagement" }
+
+[libraries]
+lombok = { module = "org.projectlombok:lombok"}
+
+# Зависимости для тестов, которые мы объединим в бандл
+spring-test-data-jdbc = { module = "org.springframework.boot:spring-boot-starter-data-jdbc-test" }
+spring-test-liquibase = { module = "org.springframework.boot:spring-boot-starter-liquibase-test" }
+spring-test-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
+spring-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers" }
+testcontainers-junit = { module = "org.testcontainers:testcontainers-junit-jupiter" }
+testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql" }
+junit-platform = { module = "org.junit.platform:junit-platform-launcher" }
+
+[bundles]
+# Собираем весь тестовый зоопарк в одну переменную
+spring-test-infrastructure = [
+    "spring-test-data-jdbc",
+    "spring-test-liquibase",
+    "spring-test-webmvc",
+    "spring-testcontainers",
+    "testcontainers-junit",
+    "testcontainers-postgresql",
+]
