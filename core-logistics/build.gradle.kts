@@ -12,8 +12,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-liquibase")
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    runtimeOnly("org.postgresql:postgresql")
 
+    implementation("org.springframework.kafka:spring-kafka")
+
+    runtimeOnly("org.postgresql:postgresql")
+    
     testImplementation(libs.bundles.spring.test.infrastructure)
 
     testRuntimeOnly(libs.junit.platform)
