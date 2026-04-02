@@ -5,3 +5,5 @@ databaseChangeLog:
       file: db/changelog/changes/002-create-transport_hub.sql
   - include:
       file: db/changelog/changes/003-add-transport_hub-version.sql
+  - include:
+      file: db/changelog/changes/004-create-outbox.sql
