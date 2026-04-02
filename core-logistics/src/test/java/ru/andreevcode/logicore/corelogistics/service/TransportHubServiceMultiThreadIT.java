@@ -11,6 +11,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import ru.andreevcode.logicore.corelogistics.data.ResponseHubDto;
+import ru.andreevcode.logicore.corelogistics.BaseIT;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -23,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Testcontainers
-class TransportHubServiceMTTest {
+class TransportHubServiceMultiThreadIT extends BaseIT {
 
     @Autowired
     TransportHubService transportHubService;
@@ -37,7 +38,7 @@ class TransportHubServiceMTTest {
 
     @AfterEach
     void tearDown() {
-        jdbcTemplate.update("TRUNCATE TABLE logistics.transport_hub RESTART IDENTITY CASCADE");
+        jdbcTemplate.update("TRUNCATE TABLE logistics.transport_hub, logistics.outbox RESTART IDENTITY CASCADE");
     }
 
     @Test

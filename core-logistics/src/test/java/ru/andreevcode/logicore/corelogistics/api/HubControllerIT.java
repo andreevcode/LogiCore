@@ -8,14 +8,19 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.postgresql.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 import ru.andreevcode.logicore.corelogistics.data.RequestChangeCapacityDto;
 import ru.andreevcode.logicore.corelogistics.data.RequestHubDto;
 import ru.andreevcode.logicore.corelogistics.data.ResponseHubDto;
+import ru.andreevcode.logicore.corelogistics.BaseIT;
 import ru.andreevcode.logicore.corelogistics.service.TransportHubService;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
@@ -29,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Testcontainers
 @AutoConfigureMockMvc
-class HubControllerTest {
+class HubControllerIT extends BaseIT {
 
     @Autowired
     MockMvc mockMvc;
@@ -47,9 +52,17 @@ class HubControllerTest {
     @ServiceConnection
     static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:16");
 
+    @Container
+    static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("apache/kafka:3.7.0"));
+
+    @DynamicPropertySource
+    static void overrideProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
+    }
+
     @AfterEach
     void tearDown() {
-        jdbcTemplate.update("TRUNCATE TABLE logistics.transport_hub RESTART IDENTITY CASCADE");
+        jdbcTemplate.update("TRUNCATE TABLE logistics.transport_hub, logistics.outbox RESTART IDENTITY CASCADE");
     }
 
     @Test
