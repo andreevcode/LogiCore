@@ -17,6 +17,7 @@ spring-test-webmvc = { module = "org.springframework.boot:spring-boot-starter-we
 spring-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers" }
 testcontainers-junit = { module = "org.testcontainers:testcontainers-junit-jupiter" }
 testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql" }
+testcontainers-kafka = { module = "org.testcontainers:testcontainers-kafka" }
 junit-platform = { module = "org.junit.platform:junit-platform-launcher" }
 
 [bundles]
@@ -28,4 +29,5 @@ spring-test-infrastructure = [
     "spring-testcontainers",
     "testcontainers-junit",
     "testcontainers-postgresql",
+    "testcontainers-kafka",
 ]
