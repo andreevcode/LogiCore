@@ -95,7 +95,7 @@ class OutboxRelayIT extends BaseIT {
 
     @Test
     void shouldSkipObsoleteAndSendLastHubCapacityDepletedEvent() {
-        List<UUID> uuids = prepareBaseOutbox(1);
+        List<OutboxEntity> entities = prepareBaseOutbox(1);
 
         // Настраиваем консьюмер вручную, чтобы гарантировать чтение с начала (earliest)
         // Используем адрес брокера прямо из контейнера
@@ -117,10 +117,10 @@ class OutboxRelayIT extends BaseIT {
                     .hasSize(4)
                     .extracting(OutboxEntity::getEventStatus, OutboxEntity::getExternalId)
                     .containsExactly(
-                            tuple(SKIPPED, uuids.get(0)),
-                            tuple(SKIPPED, uuids.get(1)),
-                            tuple(SENT, uuids.get(2)),
-                            tuple(SENT, uuids.get(3))
+                            tuple(SKIPPED, entities.get(0).getExternalId()),
+                            tuple(SKIPPED, entities.get(1).getExternalId()),
+                            tuple(SENT, entities.get(2).getExternalId()),
+                            tuple(SENT, entities.get(3).getExternalId())
                     );
 
             ConsumerRecords<String, String> records = KafkaTestUtils.getRecords(testConsumer, Duration.ofSeconds(5));
@@ -129,9 +129,10 @@ class OutboxRelayIT extends BaseIT {
                     .extracting(ConsumerRecord::key, rec ->
                             objectMapper.readValue(rec.value(), HubCapacityDepletedEvent.class))
                     .hasSize(2)
+                    .usingRecursiveFieldByFieldElementComparatorIgnoringFields("uuid", "createdAt")
                     .containsExactlyInAnyOrder(
-                            tuple("hub-test-1", new HubCapacityDepletedEvent(101L, 8, "hub-test-1")),
-                            tuple("hub-test-2", new HubCapacityDepletedEvent(102L, 10, "hub-test-2"))
+                            tuple("hub-test-1", objectMapper.readValue(entities.get(2).getPayload(), HubCapacityDepletedEvent.class)),
+                            tuple("hub-test-2", objectMapper.readValue(entities.get(3).getPayload(), HubCapacityDepletedEvent.class))
                     );
         }
     }
@@ -139,7 +140,7 @@ class OutboxRelayIT extends BaseIT {
 
     @Test
     void shouldGoFailedOnPartlyKafkaSendingException(){
-        List<UUID> uuids = prepareBaseOutbox(3);
+        List<OutboxEntity> entities = prepareBaseOutbox(3)    ;
 
         // Настройка ошибки: для этого сообщения KafkaTemplate вернет исключение
         CompletableFuture<SendResult<String, String>> failedFuture =
@@ -168,10 +169,10 @@ class OutboxRelayIT extends BaseIT {
                     .hasSize(4)
                     .extracting(OutboxEntity::getEventStatus, OutboxEntity::getExternalId)
                     .containsExactly(
-                            tuple(SKIPPED, uuids.get(0)),
-                            tuple(SKIPPED, uuids.get(1)),
-                            tuple(FAILED, uuids.get(2)),
-                            tuple(SENT, uuids.get(3))
+                            tuple(SKIPPED, entities.get(0).getExternalId()),
+                            tuple(SKIPPED, entities.get(1).getExternalId()),
+                            tuple(FAILED, entities.get(2).getExternalId()),
+                            tuple(SENT, entities.get(3).getExternalId())
                     );
 
             ConsumerRecords<String, String> records = KafkaTestUtils.getRecords(testConsumer, Duration.ofSeconds(5));
@@ -181,13 +182,13 @@ class OutboxRelayIT extends BaseIT {
                             objectMapper.readValue(rec.value(), HubCapacityDepletedEvent.class))
                     .hasSize(1)
                     .containsExactlyInAnyOrder(
-                            tuple("hub-test-4", new HubCapacityDepletedEvent(104L, 10, "hub-test-4"))
+                            tuple("hub-test-4", objectMapper.readValue(entities.get(3).getPayload(), HubCapacityDepletedEvent.class))
                     );
         }
 
     }
 
-    private List<UUID> prepareBaseOutbox(int seed){
+    private List<OutboxEntity> prepareBaseOutbox(int seed){
         var ts1 = Instant.now().minus(2, ChronoUnit.HOURS);
         var ts2 = Instant.now().minus(1, ChronoUnit.HOURS);
         var ts3 = Instant.now();
@@ -198,20 +199,20 @@ class OutboxRelayIT extends BaseIT {
         var externalId4 = UUID.randomUUID();
 
         var outboxEntity1 = new OutboxEntity(null, externalId1, OutboxEventType.HUB_CAPACITY_DEPLETED,
-                "hub-test-" + seed, objectMapper.writeValueAsString(new HubCapacityDepletedEvent(100L + seed,
+                "hub-test-" + seed, objectMapper.writeValueAsString(new HubCapacityDepletedEvent(UUID.randomUUID(), ts1, 100L + seed,
                 TransportHubService.MIN_CAPACITY_ALARM, "hub-test-" + seed)),
                 OutboxEventStatus.NEW, ts1, ts1, 0, null, null);
         var outboxEntity2 = new OutboxEntity(null, externalId2, OutboxEventType.HUB_CAPACITY_DEPLETED,
-                "hub-test-" + seed, objectMapper.writeValueAsString(new HubCapacityDepletedEvent(100L + seed,
+                "hub-test-" + seed, objectMapper.writeValueAsString(new HubCapacityDepletedEvent(UUID.randomUUID(), ts2,100L + seed,
                 TransportHubService.MIN_CAPACITY_ALARM - 1, "hub-test-" + seed)),
                 OutboxEventStatus.NEW, ts2, ts2, 0, null, null);
         var outboxEntity3 = new OutboxEntity(null, externalId3, OutboxEventType.HUB_CAPACITY_DEPLETED,
-                "hub-test-" + seed, objectMapper.writeValueAsString(new HubCapacityDepletedEvent(100L + seed,
+                "hub-test-" + seed, objectMapper.writeValueAsString(new HubCapacityDepletedEvent(UUID.randomUUID(), ts3,100L + seed,
                 TransportHubService.MIN_CAPACITY_ALARM - 2, "hub-test-" + seed)),
                 OutboxEventStatus.NEW, ts3, ts3, 0, null, null);
         seed++;
         var outboxEntity4 = new OutboxEntity(null, externalId4, OutboxEventType.HUB_CAPACITY_DEPLETED,
-                "hub-test-" + seed, objectMapper.writeValueAsString(new HubCapacityDepletedEvent(100L + seed,
+                "hub-test-" + seed, objectMapper.writeValueAsString(new HubCapacityDepletedEvent(UUID.randomUUID(), ts3,100L + seed,
                 TransportHubService.MIN_CAPACITY_ALARM, "hub-test-" + seed)),
                 OutboxEventStatus.NEW, ts3, ts3, 0, null, null);
 
@@ -219,6 +220,6 @@ class OutboxRelayIT extends BaseIT {
         outboxRepository.insert(outboxEntity2);
         outboxRepository.insert(outboxEntity3);
         outboxRepository.insert(outboxEntity4);
-        return List.of(externalId1, externalId2, externalId3, externalId4);
+        return List.of(outboxEntity1, outboxEntity2, outboxEntity3, outboxEntity4);
     }
 }

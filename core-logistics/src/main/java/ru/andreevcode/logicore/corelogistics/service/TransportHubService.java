@@ -100,8 +100,8 @@ public class TransportHubService {
                     String.format("%d hub's capacity was modified by another transaction", hubId));
         }
         if (remainingCapacity <= MIN_CAPACITY_ALARM) {
-            var event = new HubCapacityDepletedEvent(hubId, remainingCapacity, currentHub.getCode());
             Instant tsNow = Instant.now();
+            var event = new HubCapacityDepletedEvent(UUID.randomUUID(), tsNow, hubId, remainingCapacity, currentHub.getCode());
             outboxRepository.insert(new OutboxEntity(
                             null,
                             UUID.randomUUID(),
