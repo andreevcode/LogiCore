@@ -129,7 +129,6 @@ class OutboxRelayIT extends BaseIT {
                     .extracting(ConsumerRecord::key, rec ->
                             objectMapper.readValue(rec.value(), HubCapacityDepletedEvent.class))
                     .hasSize(2)
-                    .usingRecursiveFieldByFieldElementComparatorIgnoringFields("uuid", "createdAt")
                     .containsExactlyInAnyOrder(
                             tuple("hub-test-1", objectMapper.readValue(entities.get(2).getPayload(), HubCapacityDepletedEvent.class)),
                             tuple("hub-test-2", objectMapper.readValue(entities.get(3).getPayload(), HubCapacityDepletedEvent.class))
