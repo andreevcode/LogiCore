@@ -2,11 +2,10 @@
 
 --changeset andreevcode:001-create_hubs
 CREATE TABLE hubs (
-       id BIGSERIAL PRIMARY KEY,
-       name text NOT NULL,
+       id BIGINT PRIMARY KEY,
        code text NOT NULL,
        capacity int NOT NULL,
-       capacity_last_updated_at timestamp with time zone
+       capacity_updated_at timestamp with time zone
 );
 
 --rollback DROP TABLE IF EXISTS hubs;
