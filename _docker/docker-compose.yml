@@ -53,24 +53,24 @@ services:
     networks:
       - logi-core-net
 
-#  routing-engine:
-#    build:
-#      context: ../           # Контекст — корень LogiCore
-#      dockerfile: ./routing-engine/Dockerfile # Относительно корня
-#    container_name: routing-engine
-#    env_file:
-#      - ../routing-engine/.env.pg-secrets
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=docker
-#      - LOG_DIR=/app/logs
-#    ports:
-#      - "8002:8080"
-#    depends_on:
-#      pg-logicore-init:
-#        condition: service_completed_successfully # Ждем, пока создадутся схемы/юзеры
-#    restart: unless-stopped
-#    networks:
-#      - logi-core-net
+  routing-engine:
+    build:
+      context: ../           # корень (LogiCore)
+      dockerfile: ./routing-engine/Dockerfile # Относительно корня
+    container_name: routing-engine
+    env_file:
+      - ../routing-engine/.env.pg-secrets
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - LOG_DIR=/app/logs
+    ports:
+      - "8002:8080"
+    depends_on:
+      pg-logicore-init:
+        condition: service_completed_successfully # Ждем, пока создадутся схемы/юзеры
+    restart: unless-stopped
+    networks:
+      - logi-core-net
 
   kafka:
     image: apache/kafka:3.7.0
