@@ -4,27 +4,17 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.KafkaContainer;
-import org.testcontainers.postgresql.PostgreSQLContainer;
-import org.testcontainers.utility.DockerImageName;
 import ru.andreevcode.logicore.corelogistics.BaseIT;
 import ru.andreevcode.logicore.corelogistics.kafka.data.HubCapacityDepletedEvent;
 import ru.andreevcode.logicore.corelogistics.outbox.data.OutboxEntity;
@@ -50,11 +40,7 @@ import static ru.andreevcode.logicore.corelogistics.outbox.OutboxEventStatus.*;
 import static ru.andreevcode.logicore.corelogistics.repo.OutboxRepository.OUTBOX_ROW_MAPPER;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@Testcontainers
 class OutboxRelayIT extends BaseIT {
-
-    @Autowired
-    JdbcTemplate jdbcTemplate;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -75,23 +61,6 @@ class OutboxRelayIT extends BaseIT {
 
     @MockitoSpyBean
     KafkaTemplate<String, String> kafkaTemplate;
-
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:16");
-
-    @Container
-    static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("apache/kafka:3.7.0"));
-
-    @DynamicPropertySource
-    static void overrideProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
-    }
-
-    @AfterEach
-    void tearDown() {
-        jdbcTemplate.update("TRUNCATE TABLE logistics.transport_hub, logistics.outbox RESTART IDENTITY CASCADE");
-    }
 
     @Test
     void shouldSkipObsoleteAndSendLastHubCapacityDepletedEvent() {

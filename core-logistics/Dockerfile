@@ -10,7 +10,7 @@ COPY build.gradle.kts settings.gradle.kts ./
 # 2. Копируем исходники конкретного модуля, многомодульном проекте важно сохранять структуру папок
 COPY core-logistics/ core-logistics/
 
-# 3. Собираем именно этот модуль, --no-daemon для CI/CD и Docker окружений
+# 3. Собираем модуль, --no-daemon для CI/CD и Docker окружений
 RUN gradle :core-logistics:bootJar --no-daemon
 
 # ---- runtime stage ----

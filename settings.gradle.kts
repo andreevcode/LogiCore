@@ -1,3 +1,13 @@
 rootProject.name = "LogiCore"
 
-include("core-logistics")
+val modules = listOf(
+    "core-logistics",
+    "routing-engine"
+)
+
+modules.forEach { module ->
+    if (file(module).exists()) {
+        include(":$module")
+    }
+}
+
