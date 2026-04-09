@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.spring.dependency)
 }
 
-description = "core-logistics"
+description = "routing-engine"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
@@ -28,7 +28,7 @@ dependencies {
 
     // Основной Lombok для приложения
     compileOnly(libs.lombok)
-
+    
     // Подключение Lombok для тестов
     testCompileOnly(libs.lombok)
     testAnnotationProcessor(libs.lombok)

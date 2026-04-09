@@ -1,4 +1,4 @@
-package ru.andreevcode.logicore.corelogistics;
+package ru.andreevcode.logicore.routing_engine;
 
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +34,6 @@ public abstract class BaseIT {
 
     @AfterEach
     void tearDown() {
-        jdbcTemplate.update("TRUNCATE TABLE logistics.transport_hub, logistics.outbox RESTART IDENTITY CASCADE");
+        jdbcTemplate.update("TRUNCATE TABLE routing.hubs RESTART IDENTITY CASCADE");
     }
 }

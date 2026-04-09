@@ -1,22 +1,12 @@
 package ru.andreevcode.logicore.corelogistics.api;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.KafkaContainer;
-import org.testcontainers.postgresql.PostgreSQLContainer;
-import org.testcontainers.utility.DockerImageName;
 import ru.andreevcode.logicore.corelogistics.data.RequestChangeCapacityDto;
 import ru.andreevcode.logicore.corelogistics.data.RequestHubDto;
 import ru.andreevcode.logicore.corelogistics.data.ResponseHubDto;
@@ -32,7 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@Testcontainers
 @AutoConfigureMockMvc
 class HubControllerIT extends BaseIT {
 
@@ -40,30 +29,10 @@ class HubControllerIT extends BaseIT {
     MockMvc mockMvc;
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
-
-    @Autowired
     ObjectMapper objectMapper;
 
     @Autowired
     TransportHubService transportHubService;
-
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:16");
-
-    @Container
-    static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("apache/kafka:3.7.0"));
-
-    @DynamicPropertySource
-    static void overrideProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
-    }
-
-    @AfterEach
-    void tearDown() {
-        jdbcTemplate.update("TRUNCATE TABLE logistics.transport_hub, logistics.outbox RESTART IDENTITY CASCADE");
-    }
 
     @Test
     void shouldGetAllPreExistedWith200() throws Exception {

@@ -55,6 +55,7 @@ public class TransportHubService {
 
     private final ObjectMapper objectMapper;
 
+    @Transactional(readOnly = true)
     public List<ResponseHubDto> findAll() {
         return transportHubrepository.findAll().stream()
                 .map(TO_DTO_MAPPER)
@@ -67,6 +68,7 @@ public class TransportHubService {
         return TO_DTO_MAPPER.apply(entity);
     }
 
+    @Transactional(readOnly = true)
     public ResponseHubDto findById(Long id) {
         return transportHubrepository.findById(id)
                 .map(TO_DTO_MAPPER)
@@ -100,8 +102,8 @@ public class TransportHubService {
                     String.format("%d hub's capacity was modified by another transaction", hubId));
         }
         if (remainingCapacity <= MIN_CAPACITY_ALARM) {
-            var event = new HubCapacityDepletedEvent(hubId, remainingCapacity, currentHub.getCode());
             Instant tsNow = Instant.now();
+            var event = new HubCapacityDepletedEvent(UUID.randomUUID(), tsNow, hubId, remainingCapacity, currentHub.getCode());
             outboxRepository.insert(new OutboxEntity(
                             null,
                             UUID.randomUUID(),

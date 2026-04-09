@@ -1,10 +1,10 @@
-package ru.andreevcode.logicore.corelogistics;
+package ru.andreevcode.logicore.routing_engine;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class CoreLogisticsApplicationIT extends BaseIT {
+class RoutingEngineApplicationIT extends BaseIT {
 
     @Test
     void contextLoads() {

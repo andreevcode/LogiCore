@@ -1,9 +1,7 @@
 databaseChangeLog:
   - include:
-      file: db/changelog/changes/001-create-logistics-schema.sql
+      file: db/changelog/changes/001-create-transport_hub.sql
   - include:
-      file: db/changelog/changes/002-create-transport_hub.sql
+      file: db/changelog/changes/002-add-transport_hub-version.sql
   - include:
-      file: db/changelog/changes/003-add-transport_hub-version.sql
-  - include:
-      file: db/changelog/changes/004-create-outbox.sql
+      file: db/changelog/changes/003-create-outbox.sql

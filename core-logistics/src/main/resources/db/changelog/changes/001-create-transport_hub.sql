@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset andreevcode:002-create_logistics.transport_hub
+--changeset andreevcode:001-create_logistics.transport_hub
 CREATE TABLE logistics.transport_hub (
        id BIGSERIAL PRIMARY KEY,
        name text NOT NULL,

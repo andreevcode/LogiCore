@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset andreevcode:004-create_logistics.outbox_with_types
+--changeset andreevcode:003-create_logistics.outbox_with_types
 CREATE TYPE logistics.outbox_event_status as ENUM ('NEW', 'PROCESSING', 'SENT', 'SKIPPED', 'FAILED');
 
 CREATE TYPE logistics.outbox_event_type as ENUM ('HUB_CAPACITY_DEPLETED');

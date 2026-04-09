@@ -1,15 +1,9 @@
 package ru.andreevcode.logicore.corelogistics.service;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.postgresql.PostgreSQLContainer;
 import ru.andreevcode.logicore.corelogistics.data.ResponseHubDto;
 import ru.andreevcode.logicore.corelogistics.BaseIT;
 
@@ -23,23 +17,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@Testcontainers
 class TransportHubServiceMultiThreadIT extends BaseIT {
 
     @Autowired
     TransportHubService transportHubService;
-
-    @Autowired
-    JdbcTemplate jdbcTemplate;
-
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:16");
-
-    @AfterEach
-    void tearDown() {
-        jdbcTemplate.update("TRUNCATE TABLE logistics.transport_hub, logistics.outbox RESTART IDENTITY CASCADE");
-    }
 
     @Test
     void testUpdateCapacityOptimisticLocking() throws InterruptedException {
